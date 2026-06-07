@@ -1,0 +1,28 @@
+{
+  "name": "fit-tracker",
+  "version": "1.0.0",
+  "description": "Fit Track was born which have the intention of covering certain functions like: build a rutine, log workouts, weight used, repetitions, and exercises. ",
+  "homepage": "https://github.com/JordanLarcher/fit-tracker#readme",
+  "bugs": {
+    "url": "https://github.com/JordanLarcher/fit-tracker/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JordanLarcher/fit-tracker.git"
+  },
+  "license": "ISC",
+  "author": "jordan larcher",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm run dev"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "mongoose": "^9.6.3"
+  }
+}
