@@ -1,32 +1,25 @@
+const dns = require('dns');
 const mongoose = require('mongoose');
 
-let _db;
+const connectDB = async () => {
+  const dbUri = process.env.MONGO_URL || process.env.MONGODB_URI;
 
-const initDb = (callback) => {
-    if (_db) {
-        console.log('DB is already initialized!');
-        return callback(null, _db);
-    }
+  if (!dbUri) {
+    console.error('Database connection string (MONGO_URL or MONGODB_URI) is missing in environment variables.');
+    process.exit(1);
+  }
 
-    const dbUri = process.env.MONGO_URL || process.env.MONGODB_URI;
+  // Use Google DNS to workaround SRV resolution issues on some Windows networks
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-    if (!dbUri) {
-        return callback(new Error('Database connection string (MONGO_URL or MONGODB_URI) is missing in environment variables.'));
-    }
-
-    mongoose.connect(dbUri)
-        .then((db) => {
-            _db = db;
-            callback(null, _db);
-        })
-        .catch((err) => {
-            callback(err);
-        });
+  try {
+    const conn = await mongoose.connect(dbUri);
+    console.log(`MongoDB connected: ${conn.connection.host}`);
+    return conn;
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    process.exit(1);
+  }
 };
 
-const getDb = () => {
-    if (!_db) throw Error('DB not Initialized!');
-    return _db;
-};
-
-module.exports = { initDb, getDb };
+module.exports = connectDB;

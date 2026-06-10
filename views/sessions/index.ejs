@@ -1,0 +1,55 @@
+<div class="page-head">
+  <p class="eyebrow">04 · Session Logger</p>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn--ghost" id="btn-new-progress">+ Progress</button>
+    <button class="btn btn--dark" id="btn-new-session">+ New session</button>
+  </div>
+</div>
+
+<div id="sessions-container"><p class="card-sub">Loading…</p></div>
+
+<!-- New session modal -->
+<div class="modal-backdrop" id="session-modal">
+  <div class="modal">
+    <h3>Log a session</h3>
+    <form id="form-session">
+      <div class="field"><label class="label">Routine</label><select class="select" name="routine" id="session-routine" required></select></div>
+      <div class="field"><label class="label">Date</label><input class="input" type="date" name="date" id="session-date" required /></div>
+      <div class="field"><label class="label">Duration (min)</label><input class="input" type="number" name="durationMinutes" min="1" placeholder="45" /></div>
+      <div class="field"><label class="label">How did you feel?</label>
+        <select class="select" name="feeling">
+          <option value="great">Great</option>
+          <option value="good" selected>Good</option>
+          <option value="average">Average</option>
+          <option value="tired">Tired</option>
+          <option value="bad">Bad</option>
+        </select>
+      </div>
+      <div class="field"><label class="label">Notes</label><textarea class="textarea" name="notes" rows="2"></textarea></div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn--accent">Save session</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Log progress modal -->
+<div class="modal-backdrop" id="progress-modal">
+  <div class="modal">
+    <h3>Log progress</h3>
+    <form id="form-progress">
+      <div class="field"><label class="label">Session</label><select class="select" name="session" id="progress-session" required></select></div>
+      <div class="field"><label class="label">Exercise</label><select class="select" name="exercise" id="progress-exercise" required></select></div>
+      <p class="stat-label">Sets</p>
+      <div id="progress-sets"></div>
+      <button type="button" class="btn--link" id="add-set" style="margin:6px 0 16px">+ add set</button>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn--accent">Save progress</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/sessions.js"></script>

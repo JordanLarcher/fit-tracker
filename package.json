@@ -15,14 +15,26 @@
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
-    "test": "npm run dev"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed": "node scripts/seedExercises.js",
+    "seed:all": "node scripts/seedAll.js"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
     "express": "^5.2.1",
-    "express-session": "^1.19.0",
+    "express-ejs-layouts": "^2.5.1",
     "express-validator": "^7.3.2",
-    "mongoose": "^9.6.3"
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.6.3",
+    "morgan": "^1.10.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

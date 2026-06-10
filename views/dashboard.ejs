@@ -1,0 +1,52 @@
+<div class="page-head">
+  <div>
+    <p class="eyebrow">06 · Dashboard / Home</p>
+  </div>
+  <div style="text-align:right">
+    <button class="btn btn--dark" id="btn-quickstart">▶ Quick-start</button>
+    <p class="subtle" style="margin:8px 0 0">weekly streak</p>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="card" style="margin-bottom:20px">
+  <div class="ring-wrap">
+    <div>
+      <h1 style="margin:0 0 6px;color:var(--ink)" id="dash-greeting">Hello 👋</h1>
+      <p class="card-sub" id="dash-subtitle">Here's your training summary.</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <svg class="ring" viewBox="0 0 36 36" id="dash-ring">
+        <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--line)" stroke-width="3.2"/>
+        <circle id="ring-fg" cx="18" cy="18" r="15.9" fill="none" stroke="var(--accent)" stroke-width="3.2"
+                stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <div>
+        <div class="stat-num" id="dash-streak-big">0</div>
+        <p class="card-sub">day streak</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stat cards -->
+<div class="grid grid--4" style="margin-bottom:20px">
+  <div class="card"><p class="stat-label">Current streak</p><div class="stat-num" id="dash-streak">000</div></div>
+  <div class="card"><p class="stat-label">Sessions this week</p><div class="stat-num" id="dash-weekly">000</div></div>
+  <div class="card"><p class="stat-label">Total volume</p><div class="stat-num" id="dash-volume">000</div></div>
+  <div class="card"><p class="stat-label">Active routines</p><div class="stat-num" id="dash-routines">000</div></div>
+</div>
+
+<!-- Panels -->
+<div class="grid grid--2">
+  <div class="card">
+    <p class="stat-label">Recent sessions</p>
+    <div id="recent-sessions"><p class="card-sub">Loading…</p></div>
+  </div>
+  <div class="card">
+    <p class="stat-label">Last routine</p>
+    <div id="last-routine"><p class="card-sub">Loading…</p></div>
+  </div>
+</div>
+
+<script src="/js/dashboard.js"></script>

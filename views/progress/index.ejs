@@ -1,0 +1,32 @@
+<div class="page-head">
+  <p class="eyebrow">07 · Progress Statistics</p>
+  <div class="chips" style="margin:0">
+    <button class="chip" data-range="30">30d</button>
+    <button class="chip" data-range="90">90d</button>
+    <button class="chip active" data-range="365">Año</button>
+  </div>
+</div>
+
+<div class="grid grid--2" style="margin-bottom:20px">
+  <div class="card">
+    <p class="stat-label">Total volume · kg</p>
+    <div class="chart-box"><canvas id="chart-volume"></canvas></div>
+  </div>
+  <div class="card">
+    <p class="stat-label">PRs by exercise</p>
+    <div id="pr-list"><p class="card-sub">Loading…</p></div>
+  </div>
+</div>
+
+<div class="grid grid--2">
+  <div class="card">
+    <p class="stat-label">Weekly frequency</p>
+    <div class="heat" id="heatmap"></div>
+  </div>
+  <div class="card">
+    <p class="stat-label">Frequency · workouts</p>
+    <div class="chart-box"><canvas id="chart-streak"></canvas></div>
+  </div>
+</div>
+
+<script src="/js/progress.js"></script>

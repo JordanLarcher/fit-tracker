@@ -1,0 +1,51 @@
+<div class="page-head">
+  <p class="eyebrow">02 · Exercise Catalog</p>
+  <button class="btn btn--dark" id="btn-new-exercise">+ Exercise</button>
+</div>
+
+<p class="subtle" style="margin:0 0 6px">search</p>
+<input class="input input--lg" id="ex-search" placeholder="Search exercise…" style="margin-bottom:6px" />
+<p class="subtle" style="text-align:right;margin:0 0 16px">filters: muscle · equipment · difficulty</p>
+
+<div class="chips" id="ex-chips">
+  <button class="chip active" data-type="all">All</button>
+  <button class="chip" data-type="bodyPart" data-value="chest">Chest</button>
+  <button class="chip" data-type="bodyPart" data-value="back">Back</button>
+  <button class="chip" data-type="bodyPart" data-value="upper legs">Legs</button>
+  <button class="chip" data-type="bodyPart" data-value="shoulders">Shoulders</button>
+  <button class="chip" data-type="equipment" data-value="barbell">Barbell</button>
+  <button class="chip" data-type="equipment" data-value="dumbbell">Dumbbell</button>
+  <button class="chip" data-type="difficulty" data-value="beginner">Beginner</button>
+</div>
+
+<div class="grid grid--3" id="exercises-container">
+  <div class="card"><div class="sk sk--img"></div><div class="sk sk--bar sk--line sk-w-60"></div></div>
+  <div class="card"><div class="sk sk--img"></div><div class="sk sk--bar sk--line sk-w-60"></div></div>
+  <div class="card"><div class="sk sk--img"></div><div class="sk sk--bar sk--line sk-w-60"></div></div>
+</div>
+
+<!-- Modal nuevo ejercicio -->
+<div class="modal-backdrop" id="ex-modal">
+  <div class="modal">
+    <h3>New exercise</h3>
+    <form id="form-exercise">
+      <div class="field"><label class="label">Name</label><input class="input" name="name" required /></div>
+      <div class="field"><label class="label">Body part</label><input class="input" name="bodyPart" placeholder="chest, back…" required /></div>
+      <div class="field"><label class="label">Equipment</label><input class="input" name="equipment" placeholder="barbell, dumbbell…" required /></div>
+      <div class="field"><label class="label">Target muscle</label><input class="input" name="target" placeholder="pectorals…" required /></div>
+      <div class="field"><label class="label">Difficulty</label>
+        <select class="select" name="difficulty">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate" selected>Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="ex-cancel">Cancel</button>
+        <button type="submit" class="btn btn--accent">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/exercises.js"></script>

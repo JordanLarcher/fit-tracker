@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | Tempo</title>
+  <link rel="stylesheet" href="/css/tempo.css" />
+  <style>
+    .home-nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--line); background:#fff; }
+    .home-nav .brand { margin:0; }
+    .home-wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
+    .hero { text-align:center; padding:72px 0 48px; }
+    .hero h1 { font-size:3rem; color:var(--ink); margin:0 0 16px; line-height:1.1; }
+    .hero p { font-size:1.2rem; color:var(--muted); max-width:620px; margin:0 auto 28px; }
+    .hero__cta { display:flex; gap:12px; justify-content:center; }
+    .section { padding:40px 0; }
+    .lock { font-family:var(--mono); font-size:.72rem; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
+    .feature { display:flex; flex-direction:column; gap:8px; }
+    .feature__ico { width:40px; height:40px; border-radius:10px; background:var(--accent-softer); }
+    footer { text-align:center; color:var(--muted); font-size:.85rem; padding:40px 0; }
+  </style>
+</head>
+<body>
+  <header class="home-nav">
+    <div class="brand"><span class="brand__mark"></span> Tempo</div>
+    <div id="home-actions" style="display:flex; gap:10px; align-items:center"></div>
+  </header>
+
+  <div class="home-wrap">
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Train with intention.<br/>Track your progress.</h1>
+      <p>Build routines, keep your workout log and measure your progress over time. Browse the exercise catalog with no account needed.</p>
+      <div class="hero__cta" id="hero-cta"></div>
+    </section>
+
+    <!-- Interactive: public catalog (no login) -->
+    <section class="section">
+      <div class="page-head">
+        <p class="eyebrow">Explore the catalog · no sign-up</p>
+      </div>
+      <input class="input input--lg" id="home-search" placeholder="Search an exercise (e.g. press, squat, curl)…" style="margin-bottom:18px" />
+      <div class="grid grid--3" id="home-exercises">
+        <div class="card"><div class="sk sk--img"></div><div class="sk sk--bar sk--line sk-w-60"></div></div>
+        <div class="card"><div class="sk sk--img"></div><div class="sk sk--bar sk--line sk-w-60"></div></div>
+        <div class="card"><div class="sk sk--img"></div><div class="sk sk--bar sk--line sk-w-60"></div></div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section">
+      <div class="page-head"><p class="eyebrow">What you can do</p></div>
+      <div class="grid grid--3">
+        <div class="card feature">
+          <span class="feature__ico"></span>
+          <p class="card-title">Exercise catalog</p>
+          <p class="card-sub">Search and filter exercises by muscle and equipment. <strong>Available without an account.</strong></p>
+          <a href="/exercises" class="btn btn--ghost btn--sm" style="margin-top:8px">Open catalog</a>
+        </div>
+        <div class="card feature">
+          <span class="feature__ico"></span>
+          <p class="card-title">Routine builder <span class="lock">🔒 account required</span></p>
+          <p class="card-sub">Build routines with sets, reps and rest, and share them.</p>
+          <button class="btn btn--ghost btn--sm gated" data-to="/routines" style="margin-top:8px">Create routine</button>
+        </div>
+        <div class="card feature">
+          <span class="feature__ico"></span>
+          <p class="card-title">Log & stats <span class="lock">🔒 account required</span></p>
+          <p class="card-sub">Log sessions and visualize your volume, PRs and streak.</p>
+          <button class="btn btn--ghost btn--sm gated" data-to="/progress" style="margin-top:8px">View stats</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>Tempo · Workout Routine Tracker</footer>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/home.js"></script>
+</body>
+</html>

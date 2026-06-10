@@ -1,0 +1,380 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FitTrack API",
+    "version": "1.0.0",
+    "description": "RESTful API for tracking fitness routines, sessions, and progress. All routes are served under the /api prefix."
+  },
+  "servers": [
+    { "url": "http://localhost:3000/api", "description": "Development" },
+    { "url": "https://fittrack-app.herokuapp.com/api", "description": "Production" }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "Registration, login and token management" },
+    { "name": "Users", "description": "User profile management" },
+    { "name": "Exercises", "description": "Exercise catalog (public reads)" },
+    { "name": "Routines", "description": "Workout routines and public library" },
+    { "name": "Sessions", "description": "Logged workout sessions" },
+    { "name": "Progress", "description": "Per-exercise performance and stats" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "parameters": {
+      "IdParam": {
+        "name": "id", "in": "path", "required": true,
+        "schema": { "type": "string" }, "description": "MongoDB ObjectId"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string" }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "token": { "type": "string" },
+          "expiresIn": { "type": "string", "example": "24h" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string", "example": "Jordan Larcher" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["user", "coach", "admin"] },
+          "streak": { "type": "integer", "example": 5 },
+          "lastWorkoutDate": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Exercise": {
+        "type": "object",
+        "required": ["name", "bodyPart", "equipment", "target"],
+        "properties": {
+          "_id": { "type": "string" },
+          "externalId": { "type": "string", "example": "0001" },
+          "name": { "type": "string", "example": "Barbell Bench Press" },
+          "bodyPart": { "type": "string", "example": "chest" },
+          "equipment": { "type": "string", "example": "barbell" },
+          "target": { "type": "string", "example": "pectorals" },
+          "secondaryMuscles": { "type": "array", "items": { "type": "string" } },
+          "instructions": { "type": "array", "items": { "type": "string" } },
+          "gifUrl": { "type": "string", "nullable": true },
+          "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },
+          "isPublic": { "type": "boolean" }
+        }
+      },
+      "RoutineExercise": {
+        "type": "object",
+        "required": ["exercise", "sets", "reps"],
+        "properties": {
+          "exercise": { "type": "string", "description": "Exercise ObjectId" },
+          "sets": { "type": "integer", "minimum": 1, "maximum": 20, "example": 4 },
+          "reps": { "type": "integer", "minimum": 1, "example": 8 },
+          "restSeconds": { "type": "integer", "minimum": 0, "example": 90 },
+          "notes": { "type": "string" }
+        }
+      },
+      "Routine": {
+        "type": "object",
+        "required": ["name", "exercises"],
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string", "example": "Push Day" },
+          "description": { "type": "string" },
+          "exercises": { "type": "array", "items": { "$ref": "#/components/schemas/RoutineExercise" } },
+          "owner": { "type": "string" },
+          "isPublic": { "type": "boolean", "example": true },
+          "tags": { "type": "array", "items": { "type": "string" }, "example": ["fuerza", "hipertrofia"] }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "required": ["routine"],
+        "properties": {
+          "_id": { "type": "string" },
+          "user": { "type": "string" },
+          "routine": { "type": "string", "description": "Routine ObjectId" },
+          "date": { "type": "string", "format": "date-time" },
+          "durationMinutes": { "type": "integer", "minimum": 1, "example": 45 },
+          "notes": { "type": "string" },
+          "feeling": { "type": "string", "enum": ["great", "good", "average", "tired", "bad"] }
+        }
+      },
+      "ProgressSet": {
+        "type": "object",
+        "required": ["setNumber", "reps"],
+        "properties": {
+          "setNumber": { "type": "integer", "example": 1 },
+          "reps": { "type": "integer", "minimum": 0, "example": 10 },
+          "weightKg": { "type": "number", "minimum": 0, "example": 60 },
+          "completed": { "type": "boolean", "default": true }
+        }
+      },
+      "Progress": {
+        "type": "object",
+        "required": ["session", "exercise", "sets"],
+        "properties": {
+          "_id": { "type": "string" },
+          "session": { "type": "string", "description": "Session ObjectId" },
+          "user": { "type": "string" },
+          "exercise": { "type": "string", "description": "Exercise ObjectId" },
+          "sets": { "type": "array", "items": { "$ref": "#/components/schemas/ProgressSet" } },
+          "recordedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"], "summary": "Register a new user", "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": {
+            "type": "object", "required": ["name", "email", "password"],
+            "properties": {
+              "name": { "type": "string", "example": "Jordan Larcher" },
+              "email": { "type": "string", "format": "email" },
+              "password": { "type": "string", "minLength": 8 }
+            }
+          } } }
+        },
+        "responses": {
+          "201": { "description": "User created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } } },
+          "409": { "description": "Email already in use" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"], "summary": "Login", "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": {
+            "type": "object", "required": ["email", "password"],
+            "properties": { "email": { "type": "string" }, "password": { "type": "string" } }
+          } } }
+        },
+        "responses": {
+          "200": { "description": "Login successful", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } } },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["Auth"], "summary": "Get current authenticated user",
+        "responses": {
+          "200": { "description": "Current user", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "user": { "$ref": "#/components/schemas/User" } } } } } },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"], "summary": "Issue a fresh token for a valid (non-expired) token",
+        "responses": {
+          "200": { "description": "New token issued" },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"], "summary": "Get a user by id",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "200": { "description": "User", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }, "401": { "description": "Not authenticated" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Users"], "summary": "Update a user",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+        "responses": { "200": { "description": "Updated" }, "401": { "description": "Not authenticated" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["Users"], "summary": "Delete a user",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "204": { "description": "Deleted" }, "401": { "description": "Not authenticated" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/exercises": {
+      "get": {
+        "tags": ["Exercises"], "summary": "Get exercise catalog", "security": [],
+        "parameters": [
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "bodyPart", "in": "query", "schema": { "type": "string" } },
+          { "name": "equipment", "in": "query", "schema": { "type": "string" } },
+          { "name": "difficulty", "in": "query", "schema": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } }
+        ],
+        "responses": { "200": { "description": "List of exercises" } }
+      },
+      "post": {
+        "tags": ["Exercises"], "summary": "Create a custom exercise",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Exercise" } } } },
+        "responses": { "201": { "description": "Created" }, "401": { "description": "Not authenticated" }, "422": { "description": "Validation error" } }
+      }
+    },
+    "/exercises/{id}": {
+      "get": {
+        "tags": ["Exercises"], "summary": "Get an exercise by id", "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "200": { "description": "Exercise", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Exercise" } } } }, "403": { "description": "Private exercise" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Exercises"], "summary": "Update an exercise (owner/admin)",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Exercise" } } } },
+        "responses": { "200": { "description": "Updated" }, "401": { "description": "Not authenticated" }, "403": { "description": "Access denied" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["Exercises"], "summary": "Delete an exercise (owner/admin)",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "204": { "description": "Deleted" }, "401": { "description": "Not authenticated" }, "403": { "description": "Access denied" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/exercises/{id}/gif": {
+      "get": {
+        "tags": ["Exercises"], "summary": "Proxy the exercise animation (GIF) from ExerciseDB", "security": [],
+        "parameters": [
+          { "$ref": "#/components/parameters/IdParam" },
+          { "name": "resolution", "in": "query", "schema": { "type": "string", "enum": ["180", "360"], "default": "180" } }
+        ],
+        "responses": {
+          "200": { "description": "GIF image", "content": { "image/gif": { "schema": { "type": "string", "format": "binary" } } } },
+          "404": { "description": "No animation available" },
+          "502": { "description": "Upstream error" }
+        }
+      }
+    },
+    "/routines": {
+      "get": {
+        "tags": ["Routines"], "summary": "Get my routines and all public ones",
+        "responses": { "200": { "description": "List of routines" }, "401": { "description": "Not authenticated" } }
+      },
+      "post": {
+        "tags": ["Routines"], "summary": "Create a routine",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Routine" } } } },
+        "responses": { "201": { "description": "Created" }, "401": { "description": "Not authenticated" }, "422": { "description": "Validation error" } }
+      }
+    },
+    "/routines/{id}": {
+      "get": {
+        "tags": ["Routines"], "summary": "Get a routine by id",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "200": { "description": "Routine", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Routine" } } } }, "403": { "description": "Access denied" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Routines"], "summary": "Update a routine (owner only)",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Routine" } } } },
+        "responses": { "200": { "description": "Updated" }, "401": { "description": "Not authenticated" }, "403": { "description": "Access denied" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["Routines"], "summary": "Delete a routine (owner/admin)",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "204": { "description": "Deleted" }, "401": { "description": "Not authenticated" }, "403": { "description": "Access denied" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/routines/{id}/copy": {
+      "post": {
+        "tags": ["Routines"], "summary": "Copy a public routine to my account",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "201": { "description": "Copied routine created" }, "401": { "description": "Not authenticated" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/sessions": {
+      "get": {
+        "tags": ["Sessions"], "summary": "Get my sessions (paginated)",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } }
+        ],
+        "responses": { "200": { "description": "List of sessions" }, "401": { "description": "Not authenticated" } }
+      },
+      "post": {
+        "tags": ["Sessions"], "summary": "Log a session (updates streak)",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } },
+        "responses": { "201": { "description": "Created" }, "401": { "description": "Not authenticated" }, "422": { "description": "Validation error" } }
+      }
+    },
+    "/sessions/{id}": {
+      "get": {
+        "tags": ["Sessions"], "summary": "Get a session by id",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "200": { "description": "Session", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Sessions"], "summary": "Update a session",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } },
+        "responses": { "200": { "description": "Updated" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["Sessions"], "summary": "Delete a session",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/progress": {
+      "get": {
+        "tags": ["Progress"], "summary": "Get my progress entries",
+        "parameters": [
+          { "name": "sessionId", "in": "query", "schema": { "type": "string" } },
+          { "name": "exerciseId", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "List of progress entries" }, "401": { "description": "Not authenticated" } }
+      },
+      "post": {
+        "tags": ["Progress"], "summary": "Record progress for an exercise in a session",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Progress" } } } },
+        "responses": { "201": { "description": "Created" }, "401": { "description": "Not authenticated" }, "404": { "description": "Session not found" }, "422": { "description": "Validation error" } }
+      }
+    },
+    "/progress/stats": {
+      "get": {
+        "tags": ["Progress"], "summary": "Personal records and weekly volume (stretch)",
+        "responses": {
+          "200": { "description": "Stats", "content": { "application/json": { "schema": { "type": "object", "properties": {
+            "success": { "type": "boolean" },
+            "data": { "type": "object", "properties": {
+              "personalRecords": { "type": "array", "items": { "type": "object" } },
+              "weeklyVolume": { "type": "array", "items": { "type": "object" } }
+            } }
+          } } } } },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+    "/progress/{id}": {
+      "get": {
+        "tags": ["Progress"], "summary": "Get a progress entry by id",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "200": { "description": "Progress entry", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Progress" } } } }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Progress"], "summary": "Update a progress entry",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Progress" } } } },
+        "responses": { "200": { "description": "Updated" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["Progress"], "summary": "Delete a progress entry",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    }
+  }
+}

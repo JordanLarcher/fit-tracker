@@ -1,0 +1,22 @@
+<aside class="sidebar">
+  <a href="/dashboard" class="brand">
+    <span class="brand__mark"></span>
+    Tempo
+  </a>
+
+  <nav class="nav">
+    <a href="/dashboard"  class="nav-link <%= active === 'inicio' ? 'active' : '' %>"><span class="nav-ico"></span> Home</a>
+    <a href="/exercises"  class="nav-link <%= active === 'catalogo' ? 'active' : '' %>"><span class="nav-ico"></span> Catalog</a>
+    <a href="/routines"   class="nav-link <%= active === 'rutinas' ? 'active' : '' %>"><span class="nav-ico"></span> Routines</a>
+    <a href="/sessions"   class="nav-link <%= active === 'diario' ? 'active' : '' %>"><span class="nav-ico"></span> Log</a>
+    <a href="/progress"   class="nav-link <%= active === 'estadisticas' ? 'active' : '' %>"><span class="nav-ico"></span> Stats</a>
+    <a href="/public"     class="nav-link <%= active === 'publica' ? 'active' : '' %>"><span class="nav-ico"></span> Public</a>
+  </nav>
+
+  <nav class="nav nav--bottom">
+    <a href="/profile" class="nav-link <%= active === 'perfil' ? 'active' : '' %>"><span class="nav-ico"></span> Profile</a>
+    <button id="btn-logout" class="nav-link" style="background:none;border:none;text-align:left;width:100%;display:none;cursor:pointer">
+      <span class="nav-ico"></span> Logout
+    </button>
+  </nav>
+</aside>
