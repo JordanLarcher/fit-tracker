@@ -20,10 +20,12 @@ const API_BASE = '/api'; // All API routes live under /api.
 async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('ft_token');
 
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
+  const headers = { ...options.headers };
+
+  // Only send Content-Type for requests with a body (POST/PUT)
+  if (options.body) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -32,6 +34,7 @@ async function apiFetch(endpoint, options = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers,
+    credentials: 'same-origin',
   });
 
   // If the response is 401, the token expired or is invalid
