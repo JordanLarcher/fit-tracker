@@ -1,15 +1,15 @@
 // public/js/api.js
 // ─────────────────────────────────────────────────────────────────
-// Wrapper centralizado para todas las llamadas fetch al backend.
+// Centralized wrapper for all fetch calls to the backend.
 //
-// VENTAJAS de centralizar:
-//   - El token se inyecta automáticamente en cada request
-//   - Los errores 401 se manejan globalmente (redirect a login)
-//   - La base URL se configura en un solo lugar
-//   - El code de los otros módulos (exercises.js, routines.js) queda limpio
+// ADVANTAGES of centralizing:
+//   - The token is automatically injected in each request
+//   - 401 errors are handled globally (redirect to login)
+//   - The base URL is configured in one place
+//   - The code of other modules (exercises.js, routines.js) stays clean
 // ─────────────────────────────────────────────────────────────────
 
-const API_BASE = '/api'; // Todas las rutas de API viven bajo /api.
+const API_BASE = '/api'; // All API routes live under /api.
 
 /**
  * Fetch wrapper principal.
@@ -34,7 +34,7 @@ async function apiFetch(endpoint, options = {}) {
     headers,
   });
 
-  // Si la respuesta es 401, el token expiró o es inválido
+  // If the response is 401, the token expired or is invalid
   if (response.status === 401) {
     localStorage.removeItem('ft_token');
     localStorage.removeItem('ft_user');
@@ -60,7 +60,7 @@ async function apiFetch(endpoint, options = {}) {
   return data;
 }
 
-// Métodos de conveniencia
+// Convenience methods
 const api = {
   get:    (url)           => apiFetch(url, { method: 'GET' }),
   post:   (url, body)     => apiFetch(url, { method: 'POST',   body: JSON.stringify(body) }),

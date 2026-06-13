@@ -1,15 +1,15 @@
 // scripts/seedExercises.js
 // ─────────────────────────────────────────────────────────────────
-// Script de un solo uso para poblar la colección de exercises
-// con datos de ExerciseDB (vía RapidAPI).
+// One-time script to populate the exercises collection
+// with data from ExerciseDB (via RapidAPI).
 //
 // Uso: npm run seed
 //
 // ESTRATEGIA:
 //   1. Fetch a ExerciseDB con limit alto (ej: 100 ejercicios)
 //   2. Mapear el shape de ExerciseDB al schema de nuestro modelo
-//   3. Usar insertMany con ordered:false para saltar duplicados
-//      (por si el script se corre más de una vez)
+//   3. Use insertMany with ordered:false to skip duplicates
+//      (in case the script is run more than once)
 // ─────────────────────────────────────────────────────────────────
 
 require('dotenv').config();
@@ -61,7 +61,7 @@ async function seed() {
 
     const mapped = rawExercises.map(mapExercise);
 
-    // insertMany con ordered:false continúa aunque haya duplicados (por externalId único)
+    // insertMany with ordered:false continues even if there are duplicates (by unique externalId)
     const result = await Exercise.insertMany(mapped, { ordered: false });
     console.log(`✅ Inserted ${result.length} exercises into MongoDB`);
 

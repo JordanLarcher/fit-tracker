@@ -1,6 +1,6 @@
 const { body, param, query, validationResult } = require('express-validator');
 
-// ─── Handler reutilizable de errores de validación ────────────
+// ─── Reusable validation error handler ────────────
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -91,6 +91,20 @@ const validateProgress = [
   handleValidationErrors,
 ];
 
+// ─── Auth: Forgot Password ─────────────────────────────────────
+const validateForgotPassword = [
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
+  handleValidationErrors,
+];
+
+// ─── Auth: Reset Password ──────────────────────────────────────
+const validateResetPassword = [
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters'),
+  handleValidationErrors,
+];
+
 module.exports = {
   validateRegister,
   validateLogin,
@@ -98,4 +112,6 @@ module.exports = {
   validateRoutine,
   validateSession,
   validateProgress,
+  validateForgotPassword,
+  validateResetPassword,
 };

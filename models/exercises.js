@@ -4,7 +4,7 @@ const exerciseSchema = new mongoose.Schema(
   {
     externalId: {
       type: String,
-      sparse: true, // Permite múltiples documentos sin externalId (los creados por usuarios)
+      sparse: true, // Allows multiple documents without externalId (user-created ones)
     },
     name: {
       type: String,
@@ -55,10 +55,10 @@ const exerciseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Índice de texto para búsquedas full-text
+// Text index for full-text searches
 exerciseSchema.index({ name: 'text', target: 'text', bodyPart: 'text' });
 
-// Índices para filtros comunes en el catálogo
+// Indexes for common filters in the catalog
 exerciseSchema.index({ bodyPart: 1 });
 exerciseSchema.index({ equipment: 1 });
 exerciseSchema.index({ difficulty: 1 });

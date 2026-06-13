@@ -7,7 +7,7 @@
   },
   "servers": [
     { "url": "http://localhost:3000/api", "description": "Development" },
-    { "url": "https://fittrack-app.herokuapp.com/api", "description": "Production" }
+    { "url": "https://fit-tracker-8ol4.onrender.com/api", "description": "Production" }
   ],
   "tags": [
     { "name": "Auth", "description": "Registration, login and token management" },
@@ -188,6 +188,54 @@
           "200": { "description": "New token issued" },
           "401": { "description": "Not authenticated" }
         }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["Auth"], "summary": "Request a password reset email", "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": {
+            "type": "object", "required": ["email"],
+            "properties": { "email": { "type": "string", "format": "email" } }
+          } } }
+        },
+        "responses": {
+          "200": { "description": "If the email is registered, a reset link is sent" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/auth/reset-password/{token}": {
+      "post": {
+        "tags": ["Auth"], "summary": "Reset password using token", "security": [],
+        "parameters": [
+          { "name": "token", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": {
+            "type": "object", "required": ["password"],
+            "properties": { "password": { "type": "string", "minLength": 8 } }
+          } } }
+        },
+        "responses": {
+          "200": { "description": "Password reset, returns token" },
+          "400": { "description": "Token invalid or expired" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "tags": ["Auth"], "summary": "Initiate Google OAuth login", "security": [],
+        "responses": { "302": { "description": "Redirect to Google" } }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "tags": ["Auth"], "summary": "Google OAuth callback", "security": [],
+        "responses": { "302": { "description": "Redirect to frontend with token" } }
       }
     },
     "/users/{id}": {

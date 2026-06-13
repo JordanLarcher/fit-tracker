@@ -3,7 +3,7 @@ const User = require('../models/user');
 
 const protect = async (req, res, next) => {
   try {
-    // 1. Extraer token del header
+    // 1. Extract token from header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
@@ -14,10 +14,10 @@ const protect = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    // 2. Verificar firma y expiración
-    const decoded = verifyToken(token); // Lanza si es inválido
+    // 2. Verify signature and expiration
+    const decoded = verifyToken(token); // Throws if invalid
 
-    // 3. Verificar que el usuario todavía existe
+    // 3. Verify the user still exists
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
@@ -26,12 +26,12 @@ const protect = async (req, res, next) => {
       });
     }
 
-    // 4. Adjuntar usuario al request para los controllers
+    // 4. Attach user to the request for controllers
     req.user = user;
     next();
 
   } catch (err) {
-    // jwt.verify lanza TokenExpiredError o JsonWebTokenError
+    // jwt.verify throws TokenExpiredError or JsonWebTokenError
     const message =
       err.name === 'TokenExpiredError'
         ? 'Your session has expired. Please log in again.'
@@ -42,8 +42,8 @@ const protect = async (req, res, next) => {
 };
 
 /**
- * Middleware de autorización por rol.
- * Uso: router.delete('/users/:id', protect, restrictTo('admin'), handler)
+ * Role-based authorization middleware.
+ * Usage: router.delete('/users/:id', protect, restrictTo('admin'), handler)
  */
 const restrictTo = (...roles) => {
   return (req, res, next) => {

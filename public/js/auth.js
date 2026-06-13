@@ -1,8 +1,8 @@
 // public/js/auth.js
-// Gestión de autenticación en el cliente.
+// Client-side authentication management.
 
 (function () {
-  // ─── Guardar / leer sesión ───────────────────────────────────
+  // ─── Save / read session ───────────────────────────────────
   function saveSession(token, user) {
     localStorage.setItem('ft_token', token);
     localStorage.setItem('ft_user', JSON.stringify(user));
@@ -25,7 +25,7 @@
     return !!localStorage.getItem('ft_token');
   }
 
-  // ─── Actualizar navbar según estado ─────────────────────────
+  // ─── Update navbar according to state ─────────────────────────
   function updateNavbar() {
     const user = getCurrentUser();
     const btnLogout = document.getElementById('btn-logout');
@@ -85,7 +85,7 @@
     });
   }
 
-  // ─── Proteger páginas que requieren auth ─────────────────────
+  // ─── Protect pages that require auth ─────────────────────
   const protectedPaths = ['/dashboard', '/routines', '/sessions', '/progress', '/public', '/profile'];
   if (protectedPaths.some((p) => window.location.pathname.startsWith(p)) && !isLoggedIn()) {
     window.location.href = '/login';
@@ -94,6 +94,6 @@
   // Exponer funciones necesarias globalmente
   window.ftAuth = { getCurrentUser, isLoggedIn, saveSession, clearSession };
 
-  // Actualizar navbar en cada página
+  // Update navbar on every page
   updateNavbar();
 })();

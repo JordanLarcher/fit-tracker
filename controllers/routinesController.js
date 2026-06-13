@@ -3,7 +3,7 @@
 const Routine = require('../models/routines');
 
 const getRoutines = async (req, res) => {
-  // Devuelve: las rutinas privadas del usuario + todas las públicas
+  // Returns: user's private routines + all public ones
   const filter = {
     $or: [{ owner: req.user._id }, { isPublic: true }],
   };
@@ -70,7 +70,7 @@ const deleteRoutine = async (req, res) => {
   res.status(204).send();
 };
 
-// ─── Stretch: Copiar rutina pública al propio perfil ──────────
+// ─── Stretch: Copy public routine to own profile ──────────
 const copyRoutine = async (req, res) => {
   const source = await Routine.findById(req.params.id);
   if (!source || (!source.isPublic && source.owner.toString() !== req.user._id.toString())) {

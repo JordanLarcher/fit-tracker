@@ -31,7 +31,7 @@ const getProgressEntry = async (req, res) => {
 };
 
 const createProgress = async (req, res) => {
-  // Verificar que la sesión pertenece al usuario
+  // Verify the session belongs to the user
   const session = await Session.findOne({
     _id: req.body.session,
     user: req.user._id,
@@ -76,11 +76,11 @@ const deleteProgress = async (req, res) => {
 };
 
 // ─── GET /progress/stats — Stretch Challenge ───────────────────
-// Devuelve: Personal Records por ejercicio, volumen total por semana
+// Returns: Personal Records by exercise, total volume per week
 const getStats = async (req, res) => {
   const userId = req.user._id;
 
-  // Agregación para PR (máximo peso levantado por ejercicio)
+  // Aggregation for PR (max weight lifted per exercise)
   const personalRecords = await Progress.aggregate([
     { $match: { user: userId } },
     { $unwind: '$sets' },
@@ -114,7 +114,7 @@ const getStats = async (req, res) => {
     { $limit: 10 },
   ]);
 
-  // Volumen total por semana (últimas 8 semanas)
+  // Total volume per week (last 8 weeks)
   const weeklyVolume = await Progress.aggregate([
     { $match: { user: userId } },
     { $unwind: '$sets' },

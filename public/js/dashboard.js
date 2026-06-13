@@ -15,7 +15,7 @@
       api.get('/progress/stats'),
     ]);
 
-    // ─── Racha ──────────────────────────────────────────────────
+    // ─── Streak ──────────────────────────────────────────────────
     let streak = 0;
     if (meData.status === 'fulfilled') streak = meData.value.user.streak || 0;
     document.getElementById('dash-streak').textContent = streak;
@@ -23,7 +23,7 @@
     const pct = Math.min(streak / 7, 1) * 100;
     document.getElementById('ring-fg').setAttribute('stroke-dasharray', `${pct} 100`);
 
-    // ─── Sesiones recientes + esta semana ───────────────────────
+    // ─── Recent sessions + this week ───────────────────────
     const container = document.getElementById('recent-sessions');
     if (sessionsData.status === 'fulfilled') {
       const sessions = sessionsData.value.data;
@@ -48,7 +48,7 @@
       }
     }
 
-    // ─── Rutinas activas + última rutina ────────────────────────
+    // ─── Active routines + last routine ────────────────────────
     if (routinesData.status === 'fulfilled') {
       const routines = routinesData.value.data;
       const mine = routines.filter((r) => {
@@ -72,7 +72,7 @@
       }
     }
 
-    // ─── Volumen total ──────────────────────────────────────────
+    // ─── Total volume ──────────────────────────────────────────
     if (statsData.status === 'fulfilled') {
       const { weeklyVolume } = statsData.value.data;
       const total = weeklyVolume.reduce((sum, w) => sum + (w.totalVolume || 0), 0);
@@ -83,7 +83,7 @@
     console.error(err);
   }
 
-  // Quick-start → ir a Diario para registrar sesión
+  // Quick-start → go to Log to register a session
   const qs = document.getElementById('btn-quickstart');
   if (qs) qs.addEventListener('click', () => (window.location.href = '/sessions?new=1'));
 })();

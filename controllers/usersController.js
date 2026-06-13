@@ -46,7 +46,7 @@ const deleteUser = async (req, res) => {
   }
 
   await User.findByIdAndDelete(req.params.id);
-  res.status(204).send(); // 204: No Content — operación exitosa, sin body
+  res.status(204).send(); // 204: No Content — successful operation, no body
 };
 
 module.exports = { getUser, updateUser, deleteUser };

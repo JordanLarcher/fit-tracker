@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,9 +21,11 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters'],
-      select: false, // ← NUNCA se incluye en queries por defecto
+      select: false, // ← NEVER included in queries by default
+    },
+    googleId: {
+      type: String,
     },
     role: {
       type: String,
@@ -36,37 +39,49 @@ const userSchema = new mongoose.Schema(
     lastWorkoutDate: {
       type: Date,
     },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
-    timestamps: true, // Agrega createdAt y updatedAt automáticamente
+    timestamps: true, // Adds createdAt and updatedAt automatically
   }
 );
 
-// ─── Hook: hashear password antes de guardar ───────────────────
+// ─── Hook: hash password before saving ───────────────────
 // Hook async: Mongoose usa la promesa devuelta (no se recibe `next`).
 userSchema.pre('save', async function () {
-  // Solo hashear si el campo password fue modificado
+  // Only hash if the password field was modified
   if (!this.isModified('password')) return;
 
-  // saltRounds=12: buen balance entre seguridad y performance
-  // (10 es el default, 12 agrega ~4x más tiempo de cómputo para atacantes)
+  // saltRounds=12: good balance between security and performance
+  // (10 is the default, 12 adds ~4x more computation time for attackers)
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-// ─── Método de instancia: comparar password ────────────────────
-// Lo definimos en el schema para mantener la lógica de auth
-// cerca del modelo, no en el controller.
+// ─── Instance method: compare password ────────────────────
+// We define it on the schema to keep auth logic
+// close to the model, not in the controller.
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// ─── Método: serializar para respuesta API ─────────────────────
-// Evita exponer el hash por accidente en respuestas JSON
+// ─── Method: serialize for API response ─────────────────────
+// Prevents accidentally exposing the hash in JSON responses
 userSchema.methods.toPublicJSON = function () {
   const obj = this.toObject();
   delete obj.password;
   delete obj.__v;
+  delete obj.passwordResetToken;
+  delete obj.passwordResetExpires;
   return obj;
+};
+
+// ─── Instance method: generate password reset token ──────────
+userSchema.methods.generateResetToken = function () {
+  const token = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+  this.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+  return token;
 };
 
 module.exports = mongoose.model('User', userSchema);

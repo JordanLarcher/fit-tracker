@@ -23,6 +23,16 @@
           <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" required />
         </div>
         <button type="submit" class="btn btn--dark" style="width:100%;justify-content:center" id="btn-login-submit">Sign in</button>
+        <p style="text-align:center;margin:8px 0 0">
+          <a href="/forgot-password" style="font-size:.82rem;color:var(--muted)">Forgot password?</a>
+        </p>
+        <div style="position:relative;margin:18px 0;text-align:center">
+          <span style="background:#fff;padding:0 12px;color:var(--muted);font-size:.82rem;position:relative;z-index:1">or continue with</span>
+          <div style="border-top:1px solid var(--line);position:absolute;top:50%;left:0;right:0;"></div>
+        </div>
+        <a href="/api/auth/google" class="btn btn--ghost" style="width:100%;justify-content:center;gap:10px">
+          <span style="font-weight:700;font-size:1.1rem">G</span> Google
+        </a>
         <p style="text-align:center;color:var(--muted);font-size:.85rem;margin:16px 0 0">
           Don't have an account? <a href="#" id="toggle-register">Create one</a>
         </p>
@@ -44,6 +54,13 @@
           <input class="input" type="password" id="reg-password" placeholder="Min. 8 characters" required />
         </div>
         <button type="submit" class="btn btn--dark" style="width:100%;justify-content:center">Create account</button>
+        <div style="position:relative;margin:18px 0;text-align:center">
+          <span style="background:#fff;padding:0 12px;color:var(--muted);font-size:.82rem;position:relative;z-index:1">or sign up with</span>
+          <div style="border-top:1px solid var(--line);position:absolute;top:50%;left:0;right:0;"></div>
+        </div>
+        <a href="/api/auth/google" class="btn btn--ghost" style="width:100%;justify-content:center;gap:10px">
+          <span style="font-weight:700;font-size:1.1rem">G</span> Google
+        </a>
         <p style="text-align:center;color:var(--muted);font-size:.85rem;margin:16px 0 0">
           Already have an account? <a href="#" id="toggle-login">Sign in</a>
         </p>

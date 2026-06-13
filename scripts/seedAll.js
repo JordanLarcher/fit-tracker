@@ -22,7 +22,7 @@ const Progress = require('../models/progress');
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 const RAPIDAPI_HOST = 'exercisedb.p.rapidapi.com';
 
-// ─── Catálogo de respaldo (si la API no responde) ──────────────
+// ─── Backup catalog (if the API does not respond) ──────────────
 const FALLBACK_EXERCISES = [
   ['Barbell Bench Press', 'chest', 'barbell', 'pectorals', 'intermediate'],
   ['Incline Dumbbell Press', 'chest', 'dumbbell', 'pectorals', 'intermediate'],
@@ -45,7 +45,7 @@ const FALLBACK_EXERCISES = [
   instructions: ['Keep a controlled technique through the full range of motion.'],
 }));
 
-// El plan gratuito de ExerciseDB devuelve 10 por petición → paginamos con offset.
+// The free ExerciseDB plan returns 10 per request → paginate with offset.
 async function tryFetchFromApi(target = 120, pageSize = 10) {
   if (!RAPIDAPI_KEY) return null;
   const headers = { 'X-RapidAPI-Key': RAPIDAPI_KEY, 'X-RapidAPI-Host': RAPIDAPI_HOST };
@@ -55,7 +55,7 @@ async function tryFetchFromApi(target = 120, pageSize = 10) {
       const res = await fetch(`https://${RAPIDAPI_HOST}/exercises?limit=${pageSize}&offset=${offset}`, { headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const page = await res.json();
-      if (!Array.isArray(page) || !page.length) break; // fin del catálogo
+      if (!Array.isArray(page) || !page.length) break; // end of catalog
       all.push(...page);
       if (page.length < pageSize) break;
       await new Promise((r) => setTimeout(r, 250)); // respetar rate limit
@@ -89,7 +89,7 @@ async function tryFetchFromApi(target = 120, pageSize = 10) {
   }
 }
 
-// Reinserta el catálogo del sistema (createdBy:null) limpio en cada corrida.
+// Reinserts the system catalog (createdBy:null) clean on each run.
 // No toca ejercicios creados por usuarios.
 async function ensureExercises() {
   const fromApi = await tryFetchFromApi(120);
@@ -98,8 +98,8 @@ async function ensureExercises() {
 
   await Exercise.deleteMany({ createdBy: null });
 
-  // El set de respaldo se necesita siempre (las rutinas lo referencian por nombre).
-  // Evitamos colisión de nombre con los de la API.
+  // The fallback set is always needed (routines reference exercises by name).
+  // Avoid name collision with those from the API.
   const apiNames = new Set(source.map((e) => e.name.toLowerCase()));
   const fallbackNeeded = FALLBACK_EXERCISES.filter((e) => !apiNames.has(e.name.toLowerCase()));
 
@@ -118,7 +118,7 @@ async function ensureUsers() {
   const users = {};
   for (const u of DEMO_USERS) {
     let user = await User.findOne({ email: u.email });
-    if (!user) user = await User.create(u); // el hook hashea la password
+    if (!user) user = await User.create(u); // the hook hashes the password
     users[u.email] = user;
   }
   console.log(`✅ Usuarios de demo: ${Object.keys(users).length} (password: password123)`);
@@ -131,7 +131,7 @@ async function seed() {
     await ensureExercises();
     const users = await ensureUsers();
 
-    // Mapa nombre(minúscula)→ejercicio para construir rutinas (insensible a mayúsculas)
+    // Map name(lowercase)→exercise to build routines (case-insensitive)
     const exDocs = await Exercise.find({});
     const byName = Object.fromEntries(exDocs.map((e) => [e.name.toLowerCase(), e]));
     const E = (name) => {
@@ -140,14 +140,14 @@ async function seed() {
       return d._id;
     };
 
-    // ─── Limpiar datos de demo previos ───────────────────────
+    // ─── Clean previous demo data ───────────────────────
     const demoIds = Object.values(users).map((u) => u._id);
     await Progress.deleteMany({ user: { $in: demoIds } });
     await Session.deleteMany({ user: { $in: demoIds } });
     await Routine.deleteMany({ owner: { $in: demoIds } });
     console.log('🧹 Datos de demo previos eliminados.');
 
-    // ─── Rutinas ─────────────────────────────────────────────
+    // ─── Routines ─────────────────────────────────────────────
     const jordan = users['jordan@tempo.app'];
     const maria = users['maria@tempo.app'];
     const alex = users['alex@tempo.app'];
@@ -210,7 +210,7 @@ async function seed() {
     const routines = await Routine.create(routinesData);
     console.log(`✅ Rutinas: ${routines.length}`);
 
-    // ─── Sesiones + progreso de Jordan (últimas 8 semanas) ───
+    // ─── Jordan's sessions + progress (last 8 weeks) ───
     const jordanRoutines = routines.filter((r) => r.owner.equals(jordan._id));
     const feelings = ['great', 'good', 'average', 'tired', 'good'];
     let sessionCount = 0, progressCount = 0;
@@ -219,7 +219,7 @@ async function seed() {
     for (let w = 7; w >= 0; w--) {
       const routine = jordanRoutines[w % jordanRoutines.length];
       const date = new Date();
-      date.setDate(date.getDate() - w * 7 - (w % 2)); // ~1 sesión/semana
+      date.setDate(date.getDate() - w * 7 - (w % 2)); // ~1 session/week
       date.setHours(18, 0, 0, 0);
       lastDate = date;
 
@@ -234,7 +234,7 @@ async function seed() {
       sessionCount++;
 
       // Progreso para los 2 primeros ejercicios de la rutina; peso sube con las semanas
-      const weeksAgo = 7 - w; // 0 (más antiguo) → 7 (más reciente)
+      const weeksAgo = 7 - w; // 0 (oldest) → 7 (most recent)
       for (const rx of routine.exercises.slice(0, 2)) {
         const baseWeight = 40 + weeksAgo * 2.5;
         await Progress.create({
@@ -253,7 +253,7 @@ async function seed() {
       }
     }
 
-    // Actualizar streak de Jordan
+    // Update Jordan's streak
     await User.findByIdAndUpdate(jordan._id, { streak: 5, lastWorkoutDate: lastDate });
 
     console.log(`✅ Sesiones: ${sessionCount}`);

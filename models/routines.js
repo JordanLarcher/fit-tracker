@@ -67,7 +67,7 @@ const routineSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Índice para queries frecuentes
+// Index for frequent queries
 routineSchema.index({ owner: 1 });
 routineSchema.index({ isPublic: 1 });
 

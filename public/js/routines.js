@@ -12,7 +12,7 @@
   const tagsEl = document.getElementById('rt-tags');
   const mineEl = document.getElementById('rt-mine');
 
-  // ─── Etiquetas (chips multi-selección) ──────────────────────
+  // ─── Tags (multi-selection chips) ──────────────────────
   tagsEl.addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
     if (chip) chip.classList.toggle('active');
@@ -24,7 +24,7 @@
   let selected = []; // { exercise, name, sets, reps, restSeconds }
   let sortable;
 
-  // ─── Catálogo (panel izquierdo) ─────────────────────────────
+  // ─── Catalog (left panel) ─────────────────────────────
   async function loadCatalog() {
     const q = searchEl.value.trim();
     const params = new URLSearchParams({ limit: 25 });
@@ -50,7 +50,7 @@
   });
   searchEl.addEventListener('input', debounce(loadCatalog, 350));
 
-  // ─── Panel derecho (rutina en construcción) ─────────────────
+  // ─── Right panel (routine under construction) ─────────────────
   function addExercise(id, name) {
     if (selected.some((s) => s.exercise === id)) { showToast('Already in the routine.', 'info'); return; }
     selected.push({ exercise: id, name, sets: 3, reps: 10, restSeconds: 60 });
@@ -101,7 +101,7 @@
     renderSelected();
   });
 
-  // ─── Guardar ────────────────────────────────────────────────
+  // ─── Save ────────────────────────────────────────────────
   document.getElementById('rt-save').addEventListener('click', async () => {
     const name = nameEl.value.trim();
     if (!name) { showToast('Give the routine a name.', 'error'); return; }
@@ -141,7 +141,7 @@
     renderSelected();
   }
 
-  // ─── Mis rutinas (lista) ────────────────────────────────────
+  // ─── My routines (list) ────────────────────────────────────
   async function loadMine() {
     try {
       const data = await api.get('/routines');

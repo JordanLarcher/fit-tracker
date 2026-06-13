@@ -1,15 +1,15 @@
 // server.js
 // ─────────────────────────────────────────────────────────────────
-// El punto de entrada de la aplicación. Responsabilidades:
-//   1. Cargar variables de entorno
-//   2. Conectar a MongoDB
-//   3. Registrar middlewares globales
-//   4. Montar rutas
-//   5. Registrar el error handler global
-//   6. Escuchar en el puerto
+// The application entry point. Responsibilities:
+//   1. Load environment variables
+//   2. Connect to MongoDB
+//   3. Register global middlewares
+//   4. Mount routes
+//   5. Register the global error handler
+//   6. Listen on the port
 // ─────────────────────────────────────────────────────────────────
 
-require('dotenv').config(); // SIEMPRE primero
+require('dotenv').config(); // ALWAYS first
 
 const express = require('express');
 const path = require('path');
@@ -21,8 +21,9 @@ const swaggerUi = require('swagger-ui-express');
 
 const connectDB = require('./config/db');
 const { swaggerDocument, swaggerOptions } = require('./config/swagger');
+const passport = require('./config/passport');
 
-// ─── Rutas ────────────────────────────────────────────────────
+// ─── Routes ────────────────────────────────────────────────────
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const exerciseRoutes = require('./routes/exercises');
@@ -30,23 +31,24 @@ const routineRoutes = require('./routes/routines');
 const sessionRoutes = require('./routes/sessions');
 const progressRoutes = require('./routes/progress');
 
-// ─── Conectar DB ──────────────────────────────────────────────
+// ─── Connect DB ──────────────────────────────────────────────
 connectDB();
 
 const app = express();
 
-// ─── Seguridad ────────────────────────────────────────────────
+// ─── Security ────────────────────────────────────────────────
 app.use(
   helmet({
-    // Relajamos CSP para permitir que Swagger UI cargue sus assets
     contentSecurityPolicy: false,
   })
 );
 
+app.use(passport.initialize());
+
 app.use(
   cors({
     origin: process.env.NODE_ENV === 'production'
-      ? ['https://tu-app-en-heroku.herokuapp.com'] // Cambiar por tu dominio real
+      ? ['https://fit-tracker-8ol4.onrender.com']
       : '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -54,7 +56,7 @@ app.use(
 );
 
 // ─── Body parsing ─────────────────────────────────────────────
-app.use(express.json({ limit: '10kb' })); // Limitar tamaño para prevenir DoS
+app.use(express.json({ limit: '10kb' })); // Limit size to prevent DoS
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Logging ──────────────────────────────────────────────────
@@ -62,16 +64,16 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// ─── Archivos estáticos ───────────────────────────────────────
+// ─── Static files ───────────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── View Engine (EJS) ────────────────────────────────────────
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.set('layout', 'layouts/main'); // Layout por defecto
+app.set('layout', 'layouts/main'); // Default layout
 
-// ─── Documentación Swagger ───────────────────────────────────
+// ─── Swagger Documentation ───────────────────────────────────
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 
 // ─── Health Check ─────────────────────────────────────────────
@@ -84,9 +86,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ─── Rutas API ────────────────────────────────────────────────
-// Montadas bajo /api para no chocar con las páginas (vistas EJS),
-// que usan los mismos nombres (/exercises, /routines, …).
+// ─── API Routes ────────────────────────────────────────────────
+// Mounted under /api so they don't collide with pages (EJS views),
+// which use the same names (/exercises, /routines, …).
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/exercises', exerciseRoutes);
@@ -94,7 +96,7 @@ app.use('/api/routines', routineRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/progress', progressRoutes);
 
-// ─── Rutas de vistas EJS ──────────────────────────────────────
+// ─── EJS view routes ──────────────────────────────────────
 app.get('/', (req, res) => res.render('home', { title: 'Home', layout: false }));
 app.get('/login', (req, res) => res.render('auth/login', { title: 'Login', layout: false }));
 app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Home', active: 'inicio' }));
@@ -104,6 +106,9 @@ app.get('/sessions', (req, res) => res.render('sessions/index', { title: 'Log', 
 app.get('/progress', (req, res) => res.render('progress/index', { title: 'Stats', active: 'estadisticas' }));
 app.get('/public', (req, res) => res.render('public/index', { title: 'Public', active: 'publica' }));
 app.get('/profile', (req, res) => res.render('profile/index', { title: 'Profile', active: 'perfil' }));
+app.get('/forgot-password', (req, res) => res.render('auth/forgot-password', { title: 'Forgot Password', layout: false }));
+app.get('/reset-password/:token', (req, res) => res.render('auth/reset-password', { title: 'Reset Password', layout: false, token: req.params.token }));
+app.get('/auth/google/success', (req, res) => res.render('auth/google-success', { title: 'Redirecting...', layout: false }));
 
 // ─── 404 Handler ──────────────────────────────────────────────
 app.use((req, res) => {
@@ -114,23 +119,23 @@ app.use((req, res) => {
 });
 
 // ─── Error Handler Global ─────────────────────────────────────
-// Express 5 captura errores async automáticamente y los redirige aquí.
-// Este middleware SIEMPRE tiene 4 parámetros (err, req, res, next).
+// Express 5 catches async errors automatically and routes them here.
+// This middleware ALWAYS has 4 parameters (err, req, res, next).
 app.use((err, req, res, next) => {
   console.error('❌ Error:', err.message);
 
-  // Errores de validación de Mongoose
+  // Mongoose validation errors
   if (err.name === 'ValidationError') {
     const errors = Object.values(err.errors).map((e) => e.message);
     return res.status(422).json({ success: false, message: errors.join(', ') });
   }
 
-  // ID de MongoDB inválido
+  // Invalid MongoDB ID
   if (err.name === 'CastError') {
     return res.status(400).json({ success: false, message: 'Invalid ID format.' });
   }
 
-  // Duplicate key (ej: email único)
+  // Duplicate key (e.g. unique email)
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
     return res.status(409).json({
@@ -139,7 +144,7 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Error genérico
+  // Generic error
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
     success: false,
@@ -147,10 +152,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ─── Iniciar servidor ─────────────────────────────────────────
+// ─── Start server ─────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 FitTrack server running on port ${PORT}`);
-  console.log(`📚 Swagger docs: http://localhost:${PORT}/api-docs`);
-  console.log(`❤️  Health check: http://localhost:${PORT}/health`);
+  console.log(`FitTrack server running on port ${PORT}`);
+  console.log(`Swagger docs: http://localhost:${PORT}/api-docs`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
 });

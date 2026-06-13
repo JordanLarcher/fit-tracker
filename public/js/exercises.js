@@ -1,4 +1,4 @@
-// public/js/exercises.js — Catálogo (02): búsqueda, filtros, alta.
+// public/js/exercises.js — Catalog (02): search, filters, create.
 
 (function () {
   const container = document.getElementById('exercises-container');
@@ -50,7 +50,7 @@
     load();
   });
 
-  // ─── Modal nuevo ejercicio ──────────────────────────────────
+  // ─── New exercise modal ──────────────────────────────────
   const modal = document.getElementById('ex-modal');
   const openModal = () => modal.classList.add('open');
   const closeModal = () => modal.classList.remove('open');

@@ -1,4 +1,4 @@
-// public/js/progress.js — Estadísticas (07) con Chart.js.
+// public/js/progress.js — Stats (07) with Chart.js.
 
 (function () {
   const accent = '#3cb9a0';
@@ -6,7 +6,7 @@
   let volumeChart, streakChart;
 
   function renderVolume(weeklyVolume) {
-    // weeklyVolume viene desc por año/semana → invertimos para orden cronológico
+    // weeklyVolume comes desc by year/week → reverse for chronological order
     const data = [...weeklyVolume].reverse();
     const labels = data.map((w) => `S${w._id.week}`);
     const values = data.map((w) => w.totalVolume);
@@ -59,7 +59,7 @@
   }
 
   async function renderHeatmap() {
-    // 13 semanas x 3 filas (≈ proxy visual). Marcamos días con sesión.
+    // 13 weeks x 3 rows (≈ visual proxy). Mark days with sessions.
     const el = document.getElementById('heatmap');
     let days = new Set();
     try {
@@ -87,7 +87,7 @@
     }
   }
 
-  // Toggle de rango (visual; el backend agrega por semana fija)
+  // Toggle range (visual; the backend aggregates by fixed week)
   document.querySelectorAll('.chip[data-range]').forEach((chip) =>
     chip.addEventListener('click', () => {
       document.querySelectorAll('.chip[data-range]').forEach((c) => c.classList.remove('active'));

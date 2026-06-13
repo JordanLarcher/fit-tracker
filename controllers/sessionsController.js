@@ -1,10 +1,10 @@
 // controllers/sessionController.js
 // ─────────────────────────────────────────────────────────────────
-// Además del CRUD básico, al crear una sesión actualizamos el streak
-// del usuario. La lógica del streak:
-//   - Si la última sesión fue HOY → no cambia el streak
-//   - Si la última sesión fue AYER → streak++
-//   - Si fue hace más de 1 día → streak se reinicia a 1
+// Besides basic CRUD, when creating a session we update the user's streak.
+// The streak logic:
+//   - If the last session was TODAY → streak does not change
+//   - If the last session was YESTERDAY → streak++
+//   - If it was more than 1 day ago → streak resets to 1
 // ─────────────────────────────────────────────────────────────────
 
 const Session = require('../models/sessions');
@@ -48,7 +48,7 @@ const getSession = async (req, res) => {
 const createSession = async (req, res) => {
   const session = await Session.create({ ...req.body, user: req.user._id });
 
-  // ─── Actualizar streak del usuario ──────────────────────────
+  // ─── Update user streak ──────────────────────────
   const user = await User.findById(req.user._id);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -63,14 +63,14 @@ const createSession = async (req, res) => {
     last.setHours(0, 0, 0, 0);
 
     if (last.getTime() === today.getTime()) {
-      // Ya entrenó hoy — sin cambio
+      // Already trained today — no change
     } else if (last.getTime() === yesterday.getTime()) {
-      streak += 1; // Día consecutivo
+      streak += 1; // Consecutive day
     } else {
       streak = 1; // Cadena rota
     }
   } else {
-    streak = 1; // Primera sesión
+    streak = 1; // First session
   }
 
   await User.findByIdAndUpdate(req.user._id, {

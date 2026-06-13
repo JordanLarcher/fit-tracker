@@ -43,7 +43,7 @@ const progressSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Índices para las queries de stats y charts
+// Indexes for stats and charts queries
 progressSchema.index({ user: 1, exercise: 1, recordedAt: -1 });
 progressSchema.index({ session: 1 });
 

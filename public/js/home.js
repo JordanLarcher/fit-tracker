@@ -1,10 +1,10 @@
-// public/js/home.js — Landing page pública.
+// public/js/home.js — Public landing page.
 
 (function () {
   const loggedIn = window.ftAuth.isLoggedIn();
   const user = window.ftAuth.getCurrentUser();
 
-  // ─── Header + hero CTAs según estado ────────────────────────
+  // ─── Header + hero CTAs according to state ────────────────────────
   const actions = document.getElementById('home-actions');
   const heroCta = document.getElementById('hero-cta');
   if (loggedIn) {
@@ -28,7 +28,7 @@
     document.getElementById('home-search').focus();
   });
 
-  // ─── Features con candado ───────────────────────────────────
+  // ─── Gated features ───────────────────────────────────
   document.querySelectorAll('.gated').forEach((btn) =>
     btn.addEventListener('click', () => {
       if (loggedIn) { window.location.href = btn.dataset.to; return; }
@@ -36,7 +36,7 @@
       setTimeout(() => (window.location.href = '/login'), 900);
     }));
 
-  // ─── Catálogo público interactivo (sin login) ───────────────
+  // ─── Interactive public catalog (no login required) ───────────────
   const container = document.getElementById('home-exercises');
   const search = document.getElementById('home-search');
 

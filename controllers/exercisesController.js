@@ -1,12 +1,12 @@
 // controllers/exercisesController.js
 // ─────────────────────────────────────────────────────────────────
-// El catálogo de ejercicios soporta:
-//   - Búsqueda full-text con $text (usa el índice de texto del schema)
-//   - Filtros por bodyPart, equipment, difficulty
-//   - Paginación simple con limit/skip
+// The exercise catalog supports:
+//   - Full-text search with $text (uses the schema's text index)
+//   - Filters by bodyPart, equipment, difficulty
+//   - Simple pagination with limit/skip
 //
-// Los ejercicios públicos (del sistema + los creados como públicos
-// por usuarios) son visibles sin auth. Los privados solo los ve su dueño.
+// Public exercises (system + user-created public ones) are visible without auth.
+// Private ones are only seen by their owner.
 // ─────────────────────────────────────────────────────────────────
 
 const Exercise = require('../models/exercises');
@@ -19,12 +19,12 @@ const getExercises = async (req, res) => {
   const filter = {
     $or: [
       { isPublic: true },
-      // Si hay usuario autenticado, también puede ver los suyos privados
+      // If there's an authenticated user, they can also see their own private ones
       ...(req.user ? [{ createdBy: req.user._id }] : []),
     ],
   };
 
-  // Búsqueda full-text (usa el índice $text del schema)
+  // Full-text search (uses the $text index from the schema)
   if (search) {
     filter.$text = { $search: search };
   }
@@ -115,10 +115,10 @@ const deleteExercise = async (req, res) => {
 };
 
 // ─── GET /exercises/:id/gif ────────────────────────────────────
-// Proxy de la animación de ExerciseDB. El listado de ExerciseDB ya no
-// incluye gifUrl; la imagen vive en /image y requiere la API key en
-// servidor. Aquí la pedimos con la key del servidor y la servimos al
-// frontend (que así no expone la key).
+// Proxy for the ExerciseDB animation. The ExerciseDB listing no longer
+// includes gifUrl; the image lives at /image and requires the API key on
+// the server. Here we fetch it with the server key and serve it to the
+// frontend (so the key is never exposed).
 const RAPIDAPI_HOST = 'exercisedb.p.rapidapi.com';
 
 const getExerciseGif = async (req, res) => {
@@ -144,7 +144,7 @@ const getExerciseGif = async (req, res) => {
 
   const buffer = Buffer.from(await upstream.arrayBuffer());
   res.set('Content-Type', upstream.headers.get('content-type') || 'image/gif');
-  res.set('Cache-Control', 'public, max-age=86400'); // cache 1 día
+  res.set('Cache-Control', 'public, max-age=86400'); // cache 1 day
   res.send(buffer);
 };
 

@@ -33,7 +33,7 @@ const sessionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Índice compuesto para el dashboard (mis sesiones ordenadas por fecha)
+// Compound index for the dashboard (my sessions ordered by date)
 sessionSchema.index({ user: 1, date: -1 });
 sessionSchema.index({ routine: 1 });
 

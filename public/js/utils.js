@@ -1,7 +1,7 @@
 // public/js/utils.js
-// Helpers compartidos entre todos los módulos del frontend.
+// Shared helpers across all frontend modules.
 
-/** Formatea una fecha ISO a formato legible en español. */
+/** Formats an ISO date to a human-readable format. */
 function formatDate(date) {
   return new Date(date).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -11,7 +11,7 @@ function formatDate(date) {
   });
 }
 
-/** Debounce: retrasa la ejecución hasta que pasen `delay` ms desde la última llamada. */
+/** Debounce: delays execution until `delay` ms have passed since the last call. */
 function debounce(fn, delay = 300) {
   let timer;
   return function (...args) {
@@ -20,14 +20,14 @@ function debounce(fn, delay = 300) {
   };
 }
 
-/** Escapa HTML para evitar inyección al renderizar datos del usuario. */
+/** Escapes HTML to prevent injection when rendering user data. */
 function escapeHtml(str) {
   return String(str ?? '').replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
 }
 
-/** Muestra un toast notification. */
+/** Shows a toast notification. */
 function showToast(message, type = 'info', duration = 3500) {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -41,13 +41,13 @@ function showToast(message, type = 'info', duration = 3500) {
   }, duration);
 }
 
-/** Badge HTML para la dificultad de un ejercicio. */
+/** HTML badge for an exercise's difficulty. */
 function difficultyBadge(difficulty) {
   if (!difficulty) return '';
   return `<span class="tag tag--${difficulty}">${escapeHtml(difficulty)}</span>`;
 }
 
-/** Saludo según la hora del día. */
+/** Greeting according to the time of day. */
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Good morning';

@@ -1,4 +1,4 @@
-// public/js/public.js — Biblioteca de rutinas públicas (08).
+// public/js/public.js — Public routines library (08).
 
 (function () {
   const user = window.ftAuth.getCurrentUser();
@@ -7,7 +7,7 @@
   let tag = 'all';
 
   function estimateMinutes(r) {
-    // Estimación: ~ (sets totales) minutos. Simple proxy para la tarjeta.
+    // Estimate: ~ (total sets) minutes. Simple proxy for the card.
     const sets = r.exercises.reduce((s, e) => s + (e.sets || 0), 0);
     return Math.max(15, sets * 2);
   }

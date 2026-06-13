@@ -7,7 +7,7 @@
   let routinesCache = [];
   let sessionsCache = [];
 
-  // ─── Modales helpers ────────────────────────────────────────
+  // ─── Modal helpers ────────────────────────────────────────
   function open(m) { m.classList.add('open'); }
   function close(m) { m.classList.remove('open'); }
   document.querySelectorAll('[data-close]').forEach((b) =>
@@ -15,7 +15,7 @@
   [sessionModal, progressModal].forEach((m) =>
     m.addEventListener('click', (e) => { if (e.target === m) close(m); }));
 
-  // ─── Cargar lista de sesiones ───────────────────────────────
+  // ─── Load session list ───────────────────────────────
   async function loadSessions() {
     container.innerHTML = '<p class="card-sub">Loading…</p>';
     try {
@@ -47,7 +47,7 @@
     catch (err) { showToast(err.message, 'error'); }
   });
 
-  // ─── Cargar rutinas para los selects ────────────────────────
+  // ─── Load routines for selects ────────────────────────
   async function loadRoutines() {
     try {
       const data = await api.get('/routines');
@@ -57,7 +57,7 @@
     } catch (err) { showToast(err.message, 'error'); }
   }
 
-  // ─── Nueva sesión ───────────────────────────────────────────
+  // ─── New session ───────────────────────────────────────────
   document.getElementById('btn-new-session').addEventListener('click', () => {
     document.getElementById('session-date').valueAsDate = new Date();
     open(sessionModal);
@@ -76,7 +76,7 @@
     } catch (err) { showToast(err.message || 'Could not log the session.', 'error'); }
   });
 
-  // ─── Registrar progreso ─────────────────────────────────────
+  // ─── Register progress ─────────────────────────────────────
   const setsEl = document.getElementById('progress-sets');
   function addSetRow(n) {
     const div = document.createElement('div');
@@ -126,7 +126,7 @@
     } catch (err) { showToast(err.message || 'Could not save the progress.', 'error'); }
   });
 
-  // ─── Init + atajos (quick-start / repetir rutina) ───────────
+  // ─── Init + shortcuts (quick-start / repeat routine) ───────────
   (async function init() {
     await loadRoutines();
     await loadSessions();

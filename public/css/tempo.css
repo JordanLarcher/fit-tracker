@@ -10,7 +10,7 @@
   --accent-strong: #2fa68e;
   --accent-soft: #d7ede7;
   --accent-softer: #eef6f3;
-  --ink: #20262e;          /* botones oscuros / texto fuerte */
+  --ink: #20262e;          /* dark buttons / strong text */
   --text: #374151;
   --muted: #9aa1a9;
   --muted-2: #b9bfc6;
@@ -175,7 +175,7 @@ a:hover { text-decoration: underline; }
 .btn--link { background: none; border: none; color: var(--accent-strong); font-family: var(--mono); cursor: pointer; padding: 0; }
 .btn[disabled] { opacity: .55; cursor: not-allowed; }
 
-/* ─── Chips / filtros ────────────────────────────────────────── */
+/* ─── Chips / filters ────────────────────────────────────────── */
 .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
 .chip {
   font-family: var(--mono);
@@ -220,7 +220,7 @@ a:hover { text-decoration: underline; }
 .sk-w-40 { width: 40%; } .sk-w-50 { width: 50%; } .sk-w-60 { width: 60%; }
 .sk-w-70 { width: 70%; } .sk-w-80 { width: 80%; }
 
-/* ─── Badges (músculo/equipo/dificultad) ─────────────────────── */
+/* ─── Badges (muscle/equipment/difficulty) ─────────────────────── */
 .tag {
   display: inline-block;
   font-family: var(--mono);
@@ -258,7 +258,7 @@ a:hover { text-decoration: underline; }
 .ring-wrap { display: flex; align-items: center; justify-content: space-between; }
 .ring { --val: 0; width: 96px; height: 96px; }
 
-/* ─── Listas (sesiones / diario) ─────────────────────────────── */
+/* ─── Lists (sessions / daily log) ─────────────────────────────── */
 .list-row {
   display: flex; align-items: center; gap: 14px;
   padding: 14px 16px; border: 1px solid var(--line);
@@ -323,7 +323,7 @@ a:hover { text-decoration: underline; }
 .heat__cell.l3 { background: var(--accent); }
 .heat__cell.l4 { background: var(--accent-strong); }
 
-/* ─── Empty / estados ────────────────────────────────────────── */
+/* ─── Empty / states ────────────────────────────────────────── */
 .empty {
   text-align: center; color: var(--muted);
   padding: 48px 24px; border: 1px dashed var(--line-strong);
