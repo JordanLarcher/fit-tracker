@@ -44,6 +44,13 @@
           "user": { "$ref": "#/components/schemas/User" }
         }
       },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "If that email is registered, you will receive a password reset link." }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -197,32 +204,33 @@
           "required": true,
           "content": { "application/json": { "schema": {
             "type": "object", "required": ["email"],
-            "properties": { "email": { "type": "string", "format": "email" } }
+            "properties": { "email": { "type": "string", "format": "email", "example": "user@example.com" } }
           } } }
         },
         "responses": {
-          "200": { "description": "If the email is registered, a reset link is sent" },
-          "422": { "description": "Validation error" }
+          "200": { "description": "Reset link sent (if email exists)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageResponse" } } } },
+          "500": { "description": "Email could not be sent" },
+          "422": { "description": "Validation error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
     },
     "/auth/reset-password/{token}": {
       "post": {
-        "tags": ["Auth"], "summary": "Reset password using token", "security": [],
+        "tags": ["Auth"], "summary": "Reset password using token from email", "security": [],
         "parameters": [
-          { "name": "token", "in": "path", "required": true, "schema": { "type": "string" } }
+          { "name": "token", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Reset token received via email" }
         ],
         "requestBody": {
           "required": true,
           "content": { "application/json": { "schema": {
             "type": "object", "required": ["password"],
-            "properties": { "password": { "type": "string", "minLength": 8 } }
+            "properties": { "password": { "type": "string", "minLength": 8, "description": "New password (min 8 chars)" } }
           } } }
         },
         "responses": {
-          "200": { "description": "Password reset, returns token" },
-          "400": { "description": "Token invalid or expired" },
-          "422": { "description": "Validation error" }
+          "200": { "description": "Password reset successfully, returns new JWT", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } } },
+          "400": { "description": "Token invalid or expired", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "422": { "description": "Validation error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
     },

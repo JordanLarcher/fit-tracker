@@ -211,6 +211,16 @@ a:hover { text-decoration: underline; }
   width: 100%; height: 160px; object-fit: cover;
   border-radius: var(--radius-sm); background: #eef0f2; margin-bottom: 14px;
 }
+.card-img--placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; position: relative;
+}
+.card-img__initial {
+  font-size: 3rem; font-weight: 800; line-height: 1;
+}
+.card-img__tag {
+  font-size: .75rem; font-weight: 600; opacity: .65; text-transform: uppercase; letter-spacing: .5px;
+}
 
 /* ─── Skeleton placeholders ──────────────────────────────────── */
 .sk { background: var(--skeleton); border-radius: 8px; }
