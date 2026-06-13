@@ -2,15 +2,6 @@
   const root = document.getElementById('detail-root');
   const id = window.__EXERCISE_ID__;
 
-  function placeholderHtml(name, tag) {
-    const hue = name.split('').reduce((s, c) => s + c.charCodeAt(0), 0) % 360;
-    const initial = name.charAt(0).toUpperCase();
-    return `<div class="detail-img detail-img--placeholder" style="background:hsl(${hue},36%,86%);color:hsl(${hue},40%,35%);">
-      <span class="detail-img__initial">${initial}</span>
-      <span class="detail-img__tag">${escapeHtml(tag || '')}</span>
-    </div>`;
-  }
-
   async function load() {
     try {
       const res = await api.get(`/exercises/${id}`);
@@ -25,8 +16,8 @@
           <div class="detail__header">
             <div class="detail__media">
               ${img
-                ? `<img class="detail-img" src="${escapeHtml(img)}" alt="${escapeHtml(ex.name)}" onerror="this.replaceWith(placeholderHtml('${escapeHtml(ex.name)}','${escapeHtml(ex.target || ex.bodyPart)}'))" />`
-                : placeholderHtml(ex.name, ex.target || ex.bodyPart)}
+                ? `<img class="detail-img" src="${escapeHtml(img)}" alt="${escapeHtml(ex.name)}" onerror="imgFallback(this, '${escapeHtml(ex.name)}', '${escapeHtml(ex.target || ex.bodyPart)}', 'detail-img')" />`
+                : placeholderHtml(ex.name, ex.target || ex.bodyPart, 'detail-img')}
             </div>
             <div class="detail__info">
               <h1 class="detail__title">${escapeHtml(ex.name)}</h1>

@@ -25,6 +25,19 @@
     return !!localStorage.getItem('ft_token');
   }
 
+  // ─── Expose helpers immediately ────────────────────────────
+  // This runs in <head>, before page-specific scripts (e.g. routines.js)
+  // are parsed, so window.ftAuth is guaranteed to exist when they run.
+  window.ftAuth = { getCurrentUser, isLoggedIn, saveSession, clearSession };
+
+  // ─── Protect pages that require auth ─────────────────────
+  const protectedPaths = ['/dashboard', '/routines', '/sessions', '/progress', '/public', '/profile'];
+  if (protectedPaths.some((p) => window.location.pathname.startsWith(p)) && !isLoggedIn()) {
+    window.location.href = '/login';
+  }
+
+  // ─── DOM-dependent setup ───────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
   // ─── Update navbar according to state ─────────────────────────
   function updateNavbar() {
     const user = getCurrentUser();
@@ -85,15 +98,7 @@
     });
   }
 
-  // ─── Protect pages that require auth ─────────────────────
-  const protectedPaths = ['/dashboard', '/routines', '/sessions', '/progress', '/public', '/profile'];
-  if (protectedPaths.some((p) => window.location.pathname.startsWith(p)) && !isLoggedIn()) {
-    window.location.href = '/login';
-  }
-
-  // Exponer funciones necesarias globalmente
-  window.ftAuth = { getCurrentUser, isLoggedIn, saveSession, clearSession };
-
   // Update navbar on every page
   updateNavbar();
+  });
 })();

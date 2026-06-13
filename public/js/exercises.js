@@ -11,7 +11,7 @@
     return `
       <a href="/exercises/${ex._id}" class="card card--link">
         ${img
-          ? `<img class="card-img" src="${escapeHtml(img)}" alt="${escapeHtml(ex.name)}" loading="lazy" onerror="this.replaceWith(placeholderHtml('${escapeHtml(ex.name)}','${escapeHtml(ex.target || ex.bodyPart)}'))" />`
+          ? `<img class="card-img" src="${escapeHtml(img)}" alt="${escapeHtml(ex.name)}" loading="lazy" onerror="imgFallback(this, '${escapeHtml(ex.name)}', '${escapeHtml(ex.target || ex.bodyPart)}')" />`
           : placeholderHtml(ex.name, ex.target || ex.bodyPart)}
         <p class="card-title">${escapeHtml(ex.name)}</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
@@ -20,15 +20,6 @@
           ${difficultyBadge(ex.difficulty)}
         </div>
       </a>`;
-  }
-
-  function placeholderHtml(name, tag) {
-    const hue = name.split('').reduce((s, c) => s + c.charCodeAt(0), 0) % 360;
-    const initial = name.charAt(0).toUpperCase();
-    return `<div class="card-img card-img--placeholder" style="background:hsl(${hue},36%,86%);color:hsl(${hue},40%,35%);">
-      <span class="card-img__initial">${initial}</span>
-      <span class="card-img__tag">${escapeHtml(tag || '')}</span>
-    </div>`;
   }
 
   async function load() {

@@ -41,6 +41,23 @@ function showToast(message, type = 'info', duration = 3500) {
   }, duration);
 }
 
+/** HTML placeholder shown when an exercise has no image/gif. `base` is the image class (e.g. "card-img" or "detail-img"). */
+function placeholderHtml(name, tag, base = 'card-img') {
+  const hue = name.split('').reduce((s, c) => s + c.charCodeAt(0), 0) % 360;
+  const initial = name.charAt(0).toUpperCase();
+  return `<div class="${base} ${base}--placeholder" style="background:hsl(${hue},36%,86%);color:hsl(${hue},40%,35%);">
+    <span class="${base}__initial">${initial}</span>
+    <span class="${base}__tag">${escapeHtml(tag || '')}</span>
+  </div>`;
+}
+
+/** Replaces a broken <img> with its placeholder. Used as an inline onerror handler. */
+function imgFallback(img, name, tag, base = 'card-img') {
+  const div = document.createElement('div');
+  div.innerHTML = placeholderHtml(name, tag, base);
+  img.replaceWith(div.firstElementChild);
+}
+
 /** HTML badge for an exercise's difficulty. */
 function difficultyBadge(difficulty) {
   if (!difficulty) return '';
