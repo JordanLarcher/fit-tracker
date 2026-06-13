@@ -15,12 +15,15 @@
       const params = new URLSearchParams(window.location.search);
       const token = params.get('token');
       if (token) {
+        // Store the token first so api.get() below sends it as a Bearer header.
+        localStorage.setItem('ft_token', token);
         api.get('/auth/me')
           .then((data) => {
             window.ftAuth.saveSession(token, data.user);
             window.location.href = '/dashboard';
           })
           .catch(() => {
+            localStorage.removeItem('ft_token');
             window.location.href = '/login';
           });
       } else {
