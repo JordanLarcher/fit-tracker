@@ -101,6 +101,7 @@ app.get('/', (req, res) => res.render('home', { title: 'Home', layout: false }))
 app.get('/login', (req, res) => res.render('auth/login', { title: 'Login', layout: false }));
 app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Home', active: 'inicio' }));
 app.get('/exercises', (req, res) => res.render('exercises/index', { title: 'Catalog', active: 'catalogo' }));
+app.get('/exercises/:id', (req, res) => res.render('exercises/detail', { title: 'Exercise Detail', active: 'catalogo', id: req.params.id }));
 app.get('/routines', (req, res) => res.render('routines/index', { title: 'Routines', active: 'rutinas' }));
 app.get('/sessions', (req, res) => res.render('sessions/index', { title: 'Log', active: 'diario' }));
 app.get('/progress', (req, res) => res.render('progress/index', { title: 'Stats', active: 'estadisticas' }));

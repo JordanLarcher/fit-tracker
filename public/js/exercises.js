@@ -9,7 +9,7 @@
   function cardHtml(ex) {
     const img = ex.gifUrl || (ex.externalId ? `/api/exercises/${ex._id}/gif` : null);
     return `
-      <div class="card">
+      <a href="/exercises/${ex._id}" class="card card--link">
         ${img
           ? `<img class="card-img" src="${escapeHtml(img)}" alt="${escapeHtml(ex.name)}" loading="lazy" onerror="this.replaceWith(placeholderHtml('${escapeHtml(ex.name)}','${escapeHtml(ex.target || ex.bodyPart)}'))" />`
           : placeholderHtml(ex.name, ex.target || ex.bodyPart)}
@@ -19,7 +19,7 @@
           <span class="tag">${escapeHtml(ex.equipment)}</span>
           ${difficultyBadge(ex.difficulty)}
         </div>
-      </div>`;
+      </a>`;
   }
 
   function placeholderHtml(name, tag) {

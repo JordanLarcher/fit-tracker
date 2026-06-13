@@ -68,12 +68,16 @@ const getExercise = async (req, res) => {
 
 // ─── POST /exercises ───────────────────────────────────────────
 const createExercise = async (req, res) => {
-  const exerciseData = {
-    ...req.body,
-    createdBy: req.user._id,
-  };
+  const data = { ...req.body, createdBy: req.user._id };
 
-  const exercise = await Exercise.create(exerciseData);
+  if (typeof data.secondaryMuscles === 'string') {
+    data.secondaryMuscles = data.secondaryMuscles.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  if (typeof data.instructions === 'string') {
+    data.instructions = data.instructions.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+
+  const exercise = await Exercise.create(data);
   res.status(201).json({ success: true, data: exercise });
 };
 
