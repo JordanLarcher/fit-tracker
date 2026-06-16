@@ -31,11 +31,21 @@ async function apiFetch(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const signal = options.signal || controller.signal;
+  if (options.signal) {
+    options.signal.addEventListener('abort', () => controller.abort());
+  }
+
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers,
     credentials: 'same-origin',
+    signal,
   });
+
+  clearTimeout(timeoutId);
 
   // If the response is 401, the token expired or is invalid
   if (response.status === 401) {
