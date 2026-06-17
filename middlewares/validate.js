@@ -1,5 +1,13 @@
 const { body, param, query, validationResult } = require('express-validator');
 
+// ─── Shared sanitizer: extract _id from populated objects ─────
+const extractId = (value) => {
+  if (typeof value === 'object' && value !== null && value._id) {
+    return value._id;
+  }
+  return value;
+};
+
 // ─── Reusable validation error handler ────────────
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -49,6 +57,7 @@ const validateRoutine = [
     .isArray({ min: 1 })
     .withMessage('At least one exercise is required'),
   body('exercises.*.exercise')
+    .customSanitizer(extractId)
     .isMongoId()
     .withMessage('Each exercise must have a valid ID'),
   body('exercises.*.sets')
@@ -68,7 +77,10 @@ const validateRoutine = [
 
 // ─── Sessions ─────────────────────────────────────────────────
 const validateSession = [
-  body('routine').isMongoId().withMessage('Valid routine ID is required'),
+  body('routine')
+    .customSanitizer(extractId)
+    .isMongoId()
+    .withMessage('Valid routine ID is required'),
   body('durationMinutes')
     .optional()
     .isInt({ min: 1 })
@@ -82,8 +94,14 @@ const validateSession = [
 
 // ─── Progress ─────────────────────────────────────────────────
 const validateProgress = [
-  body('session').isMongoId().withMessage('Valid session ID is required'),
-  body('exercise').isMongoId().withMessage('Valid exercise ID is required'),
+  body('session')
+    .customSanitizer(extractId)
+    .isMongoId()
+    .withMessage('Valid session ID is required'),
+  body('exercise')
+    .customSanitizer(extractId)
+    .isMongoId()
+    .withMessage('Valid exercise ID is required'),
   body('sets').isArray({ min: 1 }).withMessage('At least one set is required'),
   body('sets.*.setNumber').isInt({ min: 1 }).withMessage('Set number must be >= 1'),
   body('sets.*.reps').isInt({ min: 0 }).withMessage('Reps must be >= 0'),
